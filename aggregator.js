@@ -90,7 +90,7 @@ function draw () {
   meter.tick();
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   for (const b of boxes) {
-    drawBox(b, `${box.color + b.alpha})`);
+    drawBox(b, box.color + b.alpha);
   }
   for (const d of deploys) {
     drawBox(d, deploy.color);
