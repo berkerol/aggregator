@@ -22,7 +22,7 @@ const box = {
   arc: 10,
   padding: 15,
   alphaIncrease: 0.008,
-  color: 'rgb(100,149,237,',
+  color: 'rgba(100,149,237,',
   count: 4,
   orders: {
     12: 1.0,
@@ -40,6 +40,7 @@ const deploy = {
 };
 
 const particle = {
+  shadowBlur: 20,
   highestAlpha: 0.8,
   highestRadius: 10,
   highestSpeed: 6,
@@ -90,7 +91,7 @@ function draw () {
   meter.tick();
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   for (const b of boxes) {
-    ctx.fillStyle = box.color + b.alpha;
+    ctx.fillStyle = box.color + b.alpha + ')';
     ctx.beginPath();
     drawBox(b);
     ctx.fill();
@@ -103,9 +104,12 @@ function draw () {
     }
     ctx.fill();
   }
+  ctx.save();
+  ctx.shadowBlur = particle.shadowBlur;
   for (const p of particles) {
     drawCircle(p);
   }
+  ctx.restore();
   createParticles();
   processBoxes();
   processDeploys(frames);
@@ -126,6 +130,7 @@ function drawBox (b) {
 }
 
 function drawCircle (c) {
+  ctx.shadowColor = c.color;
   ctx.fillStyle = c.color;
   ctx.beginPath();
   ctx.arc(c.x, c.y, c.radius, 0, 2 * Math.PI);
