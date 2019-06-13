@@ -90,16 +90,18 @@ function draw () {
   meter.tick();
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   for (const b of boxes) {
+    ctx.fillStyle = box.color + b.alpha;
     ctx.beginPath();
     drawBox(b);
-    fill(box.color + b.alpha);
+    ctx.fill();
   }
   if (deploys.length > 0) {
+    ctx.fillStyle = deploy.color;
     ctx.beginPath();
     for (const d of deploys) {
       drawBox(d);
     }
-    fill(deploy.color);
+    ctx.fill();
   }
   for (const p of particles) {
     drawCircle(p);
@@ -124,15 +126,10 @@ function drawBox (b) {
 }
 
 function drawCircle (c) {
+  ctx.fillStyle = c.color;
   ctx.beginPath();
   ctx.arc(c.x, c.y, c.radius, 0, 2 * Math.PI);
-  fill(c.color);
-}
-
-function fill (color) {
-  ctx.fillStyle = color;
   ctx.fill();
-  ctx.closePath();
 }
 
 function createParticles () {
