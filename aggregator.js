@@ -90,10 +90,16 @@ function draw () {
   meter.tick();
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   for (const b of boxes) {
-    drawBox(b, box.color + b.alpha);
+    ctx.beginPath();
+    drawBox(b);
+    fill(box.color + b.alpha);
   }
-  for (const d of deploys) {
-    drawBox(d, deploy.color);
+  if (deploys.length > 0) {
+    ctx.beginPath();
+    for (const d of deploys) {
+      drawBox(d);
+    }
+    fill(deploy.color);
   }
   for (const p of particles) {
     drawCircle(p);
@@ -105,8 +111,7 @@ function draw () {
   window.requestAnimationFrame(draw);
 }
 
-function drawBox (b, color) {
-  ctx.beginPath();
+function drawBox (b) {
   ctx.moveTo(b.x + box.arc, b.y);
   ctx.lineTo(b.x + box.size - box.arc, b.y);
   ctx.quadraticCurveTo(b.x + box.size, b.y, b.x + box.size, b.y + box.arc);
@@ -116,7 +121,6 @@ function drawBox (b, color) {
   ctx.quadraticCurveTo(b.x, b.y + box.size, b.x, b.y + box.size - box.arc);
   ctx.lineTo(b.x, b.y + box.arc);
   ctx.quadraticCurveTo(b.x, b.y, b.x + box.arc, b.y);
-  fill(color);
 }
 
 function drawCircle (c) {
