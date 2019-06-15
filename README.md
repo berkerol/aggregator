@@ -5,7 +5,7 @@
 [![ECMAScript](https://img.shields.io/badge/ECMAScript-latest-brightgreen.svg)](https://www.ecma-international.org/ecma-262)
 [![license](https://img.shields.io/badge/license-GNU%20GPL%20v3.0-blue.svg)](https://github.com/berkerol/aggregator/blob/master/LICENSE)
 
-A beautiful aggregator animation with colorful particles. It may also work as a loading screen. Mouse clicks create new boxes immediately.
+A beautiful aggregator animation with colorful particles. It may also work as a loading screen. Mouse clicks create new boxes immediately. Pause by pressing _P_.
 
 [![button](watch.png)](https://berkerol.github.io/aggregator/aggregator.html)
 

@@ -8,6 +8,7 @@ const getTime = typeof performance === 'function' ? performance.now : Date.now;
 const FRAME_DURATION = 1000 / 58;
 let then = getTime();
 let acc = 0;
+let animation;
 const meter = new FPSMeter({
   left: canvas.width - 130 + 'px',
   top: 'auto',
@@ -71,6 +72,7 @@ for (const i in box.orders) {
 }
 
 draw();
+document.addEventListener('keyup', keyUpHandler);
 document.addEventListener('mousedown', mouseDownHandler);
 window.addEventListener('resize', resizeHandler);
 
@@ -114,7 +116,7 @@ function draw () {
   processBoxes();
   processDeploys(frames);
   processParticles(frames);
-  window.requestAnimationFrame(draw);
+  animation = window.requestAnimationFrame(draw);
 }
 
 function drawBox (b) {
@@ -208,14 +210,27 @@ function generateRandomRgbColor () {
     Math.floor(Math.random() * 255)];
 }
 
+function keyUpHandler (e) {
+  if (e.keyCode === 80) {
+    if (animation === undefined) {
+      animation = window.requestAnimationFrame(draw);
+    } else {
+      window.cancelAnimationFrame(animation);
+      animation = undefined;
+    }
+  }
+}
+
 function mouseDownHandler (e) {
-  const x = e.clientX - canvas.offsetLeft;
-  const y = e.clientY - canvas.offsetTop;
-  for (const i in box.orders) {
-    const b = boxes[i];
-    if (b.x < x && x < b.x + box.size && b.y < y && y < b.y + box.size) {
-      createDeploy(b);
-      break;
+  if (animation !== undefined) {
+    const x = e.clientX - canvas.offsetLeft;
+    const y = e.clientY - canvas.offsetTop;
+    for (const i in box.orders) {
+      const b = boxes[i];
+      if (b.x < x && x < b.x + box.size && b.y < y && y < b.y + box.size) {
+        createDeploy(b);
+        break;
+      }
     }
   }
 }
