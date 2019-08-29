@@ -88,8 +88,6 @@ function draw () {
       frames++;
       acc -= FRAME_DURATION;
     }
-  } else {
-    ms = 0;
   }
   meter.tick();
   ctx.clearRect(0, 0, canvas.width, canvas.height);
