@@ -1,24 +1,4 @@
-/* global performance FPSMeter */
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-const getTime = typeof performance === 'function' ? performance.now : Date.now;
-const FRAME_THRESHOLD = 300;
-const FRAME_DURATION = 1000 / 58;
-let then = getTime();
-let acc = 0;
-let animation;
-const meter = new FPSMeter({
-  left: canvas.width - 130 + 'px',
-  top: 'auto',
-  bottom: '12px',
-  theme: 'colorful',
-  heat: 1,
-  graph: 1
-});
-
+/* global canvas ctx animation addPause addResize loop paintCircle drawRoundRect paintRoundRect generateRandomNumber generateRandomRgbColor */
 const box = {
   size: 60,
   arc: 10,
@@ -72,71 +52,34 @@ for (const i in box.orders) {
   boxes[i].alpha = box.orders[i];
 }
 
-draw();
-document.addEventListener('keyup', keyUpHandler);
+addPause();
+addResize();
 document.addEventListener('mousedown', mouseDownHandler);
-window.addEventListener('resize', resizeHandler);
 
-function draw () {
-  const now = getTime();
-  let ms = now - then;
-  let frames = 0;
-  then = now;
-  if (ms < FRAME_THRESHOLD) {
-    acc += ms;
-    while (acc >= FRAME_DURATION) {
-      frames++;
-      acc -= FRAME_DURATION;
-    }
-  }
-  meter.tick();
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+loop(function (frames) {
   for (const b of boxes) {
-    ctx.fillStyle = box.color + b.alpha + ')';
-    ctx.beginPath();
-    drawBox(b);
-    ctx.fill();
+    paintRoundRect(b.x, b.y, box.size, box.size, box.arc, box.arc, box.color + b.alpha + ')');
   }
   if (deploys.length > 0) {
     ctx.fillStyle = deploy.color;
     ctx.beginPath();
     for (const d of deploys) {
-      drawBox(d);
+      drawRoundRect(d.x, d.y, box.size, box.size, box.arc, box.arc);
     }
     ctx.fill();
   }
   ctx.save();
   ctx.shadowBlur = particle.shadowBlur;
   for (const p of particles) {
-    drawCircle(p);
+    ctx.shadowColor = p.color;
+    paintCircle(p.x, p.y, p.radius, p.color);
   }
   ctx.restore();
   createParticles();
   processBoxes();
   processDeploys(frames);
   processParticles(frames);
-  animation = window.requestAnimationFrame(draw);
-}
-
-function drawBox (b) {
-  ctx.moveTo(b.x + box.arc, b.y);
-  ctx.lineTo(b.x + box.size - box.arc, b.y);
-  ctx.quadraticCurveTo(b.x + box.size, b.y, b.x + box.size, b.y + box.arc);
-  ctx.lineTo(b.x + box.size, b.y + box.size - box.arc);
-  ctx.quadraticCurveTo(b.x + box.size, b.y + box.size, b.x + box.size - box.arc, b.y + box.size);
-  ctx.lineTo(b.x + box.arc, b.y + box.size);
-  ctx.quadraticCurveTo(b.x, b.y + box.size, b.x, b.y + box.size - box.arc);
-  ctx.lineTo(b.x, b.y + box.arc);
-  ctx.quadraticCurveTo(b.x, b.y, b.x + box.arc, b.y);
-}
-
-function drawCircle (c) {
-  ctx.shadowColor = c.color;
-  ctx.fillStyle = c.color;
-  ctx.beginPath();
-  ctx.arc(c.x, c.y, c.radius, 0, 2 * Math.PI);
-  ctx.fill();
-}
+});
 
 function createParticles () {
   if (Math.random() < particle.probability) {
@@ -146,12 +89,12 @@ function createParticles () {
     const dX = canvas.width / 2 - x;
     const dY = canvas.height / 2 - y;
     const norm = Math.sqrt((dX ** 2) + (dY ** 2));
-    const alpha = particle.lowestAlpha + Math.random() * (particle.highestAlpha - particle.lowestAlpha);
-    const speed = particle.lowestSpeed + Math.random() * (particle.highestSpeed - particle.lowestSpeed);
+    const alpha = generateRandomNumber(particle.lowestAlpha, particle.highestAlpha);
+    const speed = generateRandomNumber(particle.lowestSpeed, particle.highestSpeed);
     particles.push({
       x,
       y,
-      radius: particle.lowestRadius + Math.random() * (particle.highestRadius - particle.lowestRadius),
+      radius: generateRandomNumber(particle.lowestRadius, particle.highestRadius),
       color: `rgba(${c[0]}, ${c[1]}, ${c[2]}, ${alpha})`,
       speedX: dX / norm * speed,
       speedY: dY / norm * speed
@@ -204,22 +147,6 @@ function processParticles (frames) {
   }
 }
 
-function generateRandomRgbColor () {
-  return [Math.floor(Math.random() * 255), Math.floor(Math.random() * 255),
-    Math.floor(Math.random() * 255)];
-}
-
-function keyUpHandler (e) {
-  if (e.keyCode === 80) {
-    if (animation === undefined) {
-      animation = window.requestAnimationFrame(draw);
-    } else {
-      window.cancelAnimationFrame(animation);
-      animation = undefined;
-    }
-  }
-}
-
 function mouseDownHandler (e) {
   if (animation !== undefined) {
     const x = e.clientX - canvas.offsetLeft;
@@ -232,9 +159,4 @@ function mouseDownHandler (e) {
       }
     }
   }
-}
-
-function resizeHandler () {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
 }
